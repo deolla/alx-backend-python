@@ -7,10 +7,6 @@ wait_random = __import__('0-basic_async_syntax').wait_random
 
 
 async def task_wait_random(n: int, max_delay: int) -> List[asyncio.Task]:
-    """ Spawn wait_random n times with max_delay."""
-    tasks = []
-    for i in range(n):
-        tasks.append(wait_random(max_delay))
-    return [await task for task in asyncio.as_completed(tasks)]
-
-task_wait_random()
+    """ Returns a list of tasks."""
+    tasks = [task_wait_random(max_delay) for _ in range(n)]
+    return tasks
