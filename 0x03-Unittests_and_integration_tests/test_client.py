@@ -28,10 +28,7 @@ class TestGithubOrgClient(unittest.TestCase):
     def test_public_repos_url(self):
         """Test the GithubOrgClient._public_repos_url
         returns expected value."""
-        with patch(
-            "client.GithubOrgClient.org",
-            new_callable=PropertyMock
-        ) as mock_org:
+        with patch("client.GithubOrgClient.org", new_callable=PropertyMock) as mock_org:
             mock_org.return_value = {"repos_url": "http://someurl.com"}
             pop = GithubOrgClient("google")
             self.assertEqual(pop._public_repos_url, "http://someurl.com")
@@ -43,8 +40,7 @@ class TestGithubOrgClient(unittest.TestCase):
         mock_find.return_value = json_payload
 
         with patch(
-            "client.GithubOrgClient._public_repos_url",
-            new_callable=PropertyMock
+            "client.GithubOrgClient._public_repos_url", new_callable=PropertyMock
         ) as mock_public:
 
             mock_public.return_value = "hello/world"
@@ -78,15 +74,16 @@ class TestGithubOrgClient(unittest.TestCase):
         @classmethod
         def setUpClass(cls):
             """A method that setUpClass method."""
-            pop = {'return_value.json.side_effect':
-                  [
-                      cls.org_payload, cls.repos_payload,
-                      cls.org_payload, cls.repos_payload
-                  ]
-                  }
-        cls.get_patcher = patch('requests.get', **pop)
-
-        cls.mock = cls.get_patcher.start()
+            pop = {
+                "return_value.json.side_effect": [
+                    cls.org_payload,
+                    cls.repos_payload,
+                    cls.org_payload,
+                    cls.repos_payload,
+                ]
+            }
+            cls.get_patcher = patch("requests.get", **pop)
+            cls.mock = cls.get_patcher.start()
 
         @classmethod
         def tearDownClass(cls):
@@ -109,8 +106,5 @@ class TestGithubOrgClient(unittest.TestCase):
 
             self.assertEqual(tests.public_repos(), self.expected_repos)
             self.assertEqual(tests.public_repos("XLICENSE"), [])
-            self.assertEqual(
-                tests.public_repos("apache-2.0"),
-                self.apache2_repos
-            )
+            self.assertEqual(tests.public_repos("apache-2.0"), self.apache2_repos)
             self.mock.assert_called()
