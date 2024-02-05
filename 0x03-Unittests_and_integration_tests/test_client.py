@@ -38,7 +38,7 @@ class TestGithubOrgClient(unittest.TestCase):
 
     @patch("client.get_json")
     def test_public_repos(self, mock_find):
-        """Test public_repos method."""
+        """A method that test public_repos method."""
         json_payload = [{"name": "Google"}, {"name": "Twitter"}]
         mock_find.return_value = json_payload
 
@@ -77,7 +77,7 @@ class TestGithubOrgClient(unittest.TestCase):
 
         @classmethod
         def setUpClass(cls):
-            """setUpClass method."""
+            """A method that setUpClass method."""
             cls.get_patcher = patch(
                 "requests.get",
                 side_effect=cls.get_side_effect
@@ -86,12 +86,12 @@ class TestGithubOrgClient(unittest.TestCase):
 
         @classmethod
         def tearDownClass(cls):
-            """tearDownClass method."""
+            """A method that tearDownClass method."""
             cls.get_patcher.stop()
 
         @staticmethod
         def get_side_effect(url):
-            """get_side_effect method."""
+            """A method that test get_side_effect method."""
             if url == "https://api.github.com/orgs/google":
                 return Mock(
                     json=Mock(return_value=TestGithubOrgClient.org_payload)
