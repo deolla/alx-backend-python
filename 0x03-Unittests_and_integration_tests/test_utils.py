@@ -31,6 +31,9 @@ class TestAccessNestedMap(unittest.TestCase):
 
         self.assertEqual(f"KeyError('{exceptions}')", repr(context.exception))
 
+
+class TestGetJson(unittest.TestCase):
+
     @patch("requests.get")
     @parameterized.expand(
         [
@@ -39,15 +42,11 @@ class TestAccessNestedMap(unittest.TestCase):
         ]
     )
     def test_get_json(self, test_url, test_payload):
-        # Mock the 'get' method to return a Mock object with a 'json' method
-        mock_response = Mock()
-        mock_response.json.return_value = test_payload
-        requests_get_mock = Mock(return_value=mock_response)
-
-        # Patch the 'requests.get' method with the mock
-        with patch("requests.get", requests_get_mock):
+        """Test that utils.get_json returns the expected result."""
+        with patch(
+            "requests.get", return_value=Mock(json=Mock(return_value=test_payload))
+        ) as mock:
             result = utils.get_json(test_url)
 
-        # Assertions
-        requests_get_mock.assert_called_once_with(test_url)
         self.assertEqual(result, test_payload)
+        mock.assert_called_once()
