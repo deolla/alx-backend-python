@@ -90,11 +90,20 @@ class TestGithubOrgClient(unittest.TestCase):
                 return Mock(json=Mock(return_value=TestGithubOrgClient.repos_payload))
 
         def test_public_repos(self):
-            """Integration test for public_repos method."""
-            org = GithubOrgClient("google")
-            self.assertEqual(org.public_repos(), self.expected_repos)
+            """Integration tests for public_repos method."""
+            test_class = GithubOrgClient("google")
+
+            self.assertEqual(test_class.org, self.org_payload)
+            self.assertEqual(test_class.repos_payload, self.repos_payload)
+            self.assertEqual(test_class.public_repos(), self.expected_repos)
+            self.assertEqual(test_class.public_repos("XLICENSE"), [])
+            self.mock.assert_called()
 
         def test_public_repos_with_license(self):
-            """Integration test for public_repos method with license."""
-            org = GithubOrgClient("google")
-            self.assertEqual(org.public_repos("apache-2.0"), self.apache2_repos)
+            """Integration tests for public_repos method."""
+            test_class = GithubOrgClient("google")
+
+            self.assertEqual(test_class.public_repos(), self.expected_repos)
+            self.assertEqual(test_class.public_repos("XLICENSE"), [])
+            self.assertEqual(test_class.public_repos("apache-2.0"), self.apache2_repos)
+            self.mock.assert_called()
