@@ -62,3 +62,39 @@ class TestGithubOrgClient(unittest.TestCase):
         """unit-test for GithubOrgClient.has_license"""
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected)
+
+    @parameterized_class(
+        ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
+        TEST_PAYLOAD,
+    )
+    class TestIntegrationGithubOrgClient(unittest.TestCase):
+        """Integration test for GithubOrgClient class."""
+
+        @classmethod
+        def setUpClass(cls):
+            """setUpClass method."""
+            cls.get_patcher = patch("requests.get", side_effect=cls.get_side_effect)
+            cls.mock_get = cls.get_patcher.start()
+
+        @classmethod
+        def tearDownClass(cls):
+            """tearDownClass method."""
+            cls.get_patcher.stop()
+
+        @staticmethod
+        def get_side_effect(url):
+            """get_side_effect method."""
+            if url == "https://api.github.com/orgs/google":
+                return Mock(json=Mock(return_value=TestGithubOrgClient.org_payload))
+            if url == "https://api.github.com/orgs/google/repos":
+                return Mock(json=Mock(return_value=TestGithubOrgClient.repos_payload))
+
+        def test_public_repos(self):
+            """Integration test for public_repos method."""
+            org = GithubOrgClient("google")
+            self.assertEqual(org.public_repos(), self.expected_repos)
+
+        def test_public_repos_with_license(self):
+            """Integration test for public_repos method with license."""
+            org = GithubOrgClient("google")
+            self.assertEqual(org.public_repos("apache-2.0"), self.apache2_repos)
