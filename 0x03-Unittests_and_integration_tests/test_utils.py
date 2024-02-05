@@ -39,10 +39,15 @@ class TestAccessNestedMap(unittest.TestCase):
         ]
     )
     def test_get_json(self, test_url, test_payload):
-        """A method to test the get_json method."""
-        mock = Mock()
-        mock.json.return_value = test_payload
-        with patch("requests.get", return_value=mock):
-            response = get_json(test_url)
-            self.assertEqual(response, test_payload)
-            mock.json.assert_called_once()
+        # Mock the 'get' method to return a Mock object with a 'json' method
+        mock_response = Mock()
+        mock_response.json.return_value = test_payload
+        requests_get_mock = Mock(return_value=mock_response)
+
+        # Patch the 'requests.get' method with the mock
+        with patch("requests.get", requests_get_mock):
+            result = utils.get_json(test_url)
+
+        # Assertions
+        requests_get_mock.assert_called_once_with(test_url)
+        self.assertEqual(result, test_payload)
