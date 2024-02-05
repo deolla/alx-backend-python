@@ -78,47 +78,39 @@ class TestGithubOrgClient(unittest.TestCase):
         @classmethod
         def setUpClass(cls):
             """A method that setUpClass method."""
-            cls.get_patcher = patch(
-                "requests.get",
-                side_effect=cls.get_side_effect
-            )
-            cls.mock_get = cls.get_patcher.start()
+            pop = {'return_value.json.side_effect':
+                  [
+                      cls.org_payload, cls.repos_payload,
+                      cls.org_payload, cls.repos_payload
+                  ]
+                  }
+        cls.get_patcher = patch('requests.get', **pop)
+
+        cls.mock = cls.get_patcher.start()
 
         @classmethod
         def tearDownClass(cls):
             """A method that tearDownClass method."""
             cls.get_patcher.stop()
 
-        @staticmethod
-        def get_side_effect(url):
-            """A method that test get_side_effect method."""
-            if url == "https://api.github.com/orgs/google":
-                return Mock(
-                    json=Mock(return_value=TestGithubOrgClient.org_payload)
-                )
-            if url == "https://api.github.com/orgs/google/repos":
-                return Mock(
-                    json=Mock(return_value=TestGithubOrgClient.repos_payload)
-                )
-
         def test_public_repos(self):
             """Integration tests for public_repos method."""
-            test_class = GithubOrgClient("google")
+            tests = GithubOrgClient("google")
 
-            self.assertEqual(test_class.org, self.org_payload)
-            self.assertEqual(test_class.repos_payload, self.repos_payload)
-            self.assertEqual(test_class.public_repos(), self.expected_repos)
-            self.assertEqual(test_class.public_repos("XLICENSE"), [])
+            self.assertEqual(tests.org, self.org_payload)
+            self.assertEqual(tests.repos_payload, self.repos_payload)
+            self.assertEqual(tests.public_repos(), self.expected_repos)
+            self.assertEqual(tests.public_repos("XLICENSE"), [])
             self.mock.assert_called()
 
         def test_public_repos_with_license(self):
-            """Integration tests for public_repos method."""
-            test_class = GithubOrgClient("google")
+            """A method that Integration tests for public_repos method."""
+            tests = GithubOrgClient("google")
 
-            self.assertEqual(test_class.public_repos(), self.expected_repos)
-            self.assertEqual(test_class.public_repos("XLICENSE"), [])
+            self.assertEqual(tests.public_repos(), self.expected_repos)
+            self.assertEqual(tests.public_repos("XLICENSE"), [])
             self.assertEqual(
-                test_class.public_repos("apache-2.0"),
+                tests.public_repos("apache-2.0"),
                 self.apache2_repos
             )
             self.mock.assert_called()
