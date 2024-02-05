@@ -26,8 +26,12 @@ class TestGithubOrgClient(unittest.TestCase):
         mock_get.assert_called_once_with(f"https://api.github.com/orgs/{org}")
 
     def test_public_repos_url(self):
-        """Test the GithubOrgClient._public_repos_url returns expected value."""
-        with patch("client.GithubOrgClient.org", new_callable=PropertyMock) as mock_org:
+        """Test the GithubOrgClient._public_repos_url
+        returns expected value."""
+        with patch(
+            "client.GithubOrgClient.org",
+            new_callable=PropertyMock
+        ) as mock_org:
             mock_org.return_value = {"repos_url": "http://someurl.com"}
             pop = GithubOrgClient("google")
             self.assertEqual(pop._public_repos_url, "http://someurl.com")
@@ -39,7 +43,8 @@ class TestGithubOrgClient(unittest.TestCase):
         mock_find.return_value = json_payload
 
         with patch(
-            "client.GithubOrgClient._public_repos_url", new_callable=PropertyMock
+            "client.GithubOrgClient._public_repos_url",
+            new_callable=PropertyMock
         ) as mock_public:
 
             mock_public.return_value = "hello/world"
@@ -73,7 +78,10 @@ class TestGithubOrgClient(unittest.TestCase):
         @classmethod
         def setUpClass(cls):
             """setUpClass method."""
-            cls.get_patcher = patch("requests.get", side_effect=cls.get_side_effect)
+            cls.get_patcher = patch(
+                "requests.get",
+                side_effect=cls.get_side_effect
+            )
             cls.mock_get = cls.get_patcher.start()
 
         @classmethod
@@ -85,9 +93,13 @@ class TestGithubOrgClient(unittest.TestCase):
         def get_side_effect(url):
             """get_side_effect method."""
             if url == "https://api.github.com/orgs/google":
-                return Mock(json=Mock(return_value=TestGithubOrgClient.org_payload))
+                return Mock(
+                    json=Mock(return_value=TestGithubOrgClient.org_payload)
+                )
             if url == "https://api.github.com/orgs/google/repos":
-                return Mock(json=Mock(return_value=TestGithubOrgClient.repos_payload))
+                return Mock(
+                    json=Mock(return_value=TestGithubOrgClient.repos_payload)
+                )
 
         def test_public_repos(self):
             """Integration tests for public_repos method."""
@@ -105,5 +117,8 @@ class TestGithubOrgClient(unittest.TestCase):
 
             self.assertEqual(test_class.public_repos(), self.expected_repos)
             self.assertEqual(test_class.public_repos("XLICENSE"), [])
-            self.assertEqual(test_class.public_repos("apache-2.0"), self.apache2_repos)
+            self.assertEqual(
+                test_class.public_repos("apache-2.0"),
+                self.apache2_repos
+            )
             self.mock.assert_called()
