@@ -28,10 +28,16 @@ class TestGithubOrgClient(unittest.TestCase):
     def test_public_repos_url(self):
         """Test the GithubOrgClient._public_repos_url
         returns expected value."""
-        with patch("client.GithubOrgClient.org", new_callable=PropertyMock) as mock_org:
+        with patch(
+            "client.GithubOrgClient.org",
+            new_callable=PropertyMock
+        ) as mock_org:
             mock_org.return_value = {"repos_url": "http://someurl.com"}
             pop = GithubOrgClient("google")
-            self.assertEqual(pop._public_repos_url, "http://someurl.com")
+            self.assertEqual(
+                    pop._public_repos_url,
+                    "http://someurl.com"
+                )
 
     @patch("client.get_json")
     def test_public_repos(self, mock_find):
@@ -40,7 +46,8 @@ class TestGithubOrgClient(unittest.TestCase):
         mock_find.return_value = json_payload
 
         with patch(
-            "client.GithubOrgClient._public_repos_url", new_callable=PropertyMock
+            "client.GithubOrgClient._public_repos_url",
+            new_callable=PropertyMock
         ) as mock_public:
 
             mock_public.return_value = "hello/world"
@@ -106,5 +113,8 @@ class TestGithubOrgClient(unittest.TestCase):
 
             self.assertEqual(tests.public_repos(), self.expected_repos)
             self.assertEqual(tests.public_repos("XLICENSE"), [])
-            self.assertEqual(tests.public_repos("apache-2.0"), self.apache2_repos)
+            self.assertEqual(
+                tests.public_repos("apache-2.0"),
+                self.apache2_repos
+            )
             self.mock.assert_called()
